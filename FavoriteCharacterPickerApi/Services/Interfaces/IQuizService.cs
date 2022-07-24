@@ -1,6 +1,6 @@
 ﻿namespace FavoriteCharacterPickerApi.Services;
 
-public class IQuizService
+public interface IQuizService
 {
     
 }

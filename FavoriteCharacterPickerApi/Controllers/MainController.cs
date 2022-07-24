@@ -1,6 +1,18 @@
-﻿namespace FavoriteCharacterPickerApi.Controllers;
+﻿using FavoriteCharacterPickerApi.Services;
+using Microsoft.AspNetCore.Mvc;
 
-public class MainController
+namespace FavoriteCharacterPickerApi.Controllers;
+
+[ApiController]
+[Route("api")]
+public class MainController : ControllerBase
 {
-    
+    private readonly IUserService _userService;
+
+    public MainController(IUserService userService)
+    {
+        _userService = userService;
+    }
+
+
 }

@@ -1,6 +1,6 @@
 ﻿namespace FavoriteCharacterPickerApi.Services;
 
-public class ITitleService
+public interface ITitleService
 {
     
 }
