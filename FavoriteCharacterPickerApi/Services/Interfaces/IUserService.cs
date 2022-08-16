@@ -6,7 +6,8 @@ namespace FavoriteCharacterPickerApi.Services;
 public interface IUserService
 {
     public Task<UserDto> CreateUser(CreateUserRequest request);
-    public Task GetUserById();
-    public Task GetUserByName();
-    public Task DeleteUser();
+    public Task<UserDto> GetUserById(int id);
+    public Task<UserDto> GetUserByName(string name);
+    public Task<UserDto> EditUser(int id, EditUserRequest request);
+    public Task DeleteUser(int id);
 }

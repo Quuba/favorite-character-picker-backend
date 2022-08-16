@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="11.0.1" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.7">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.8" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Transactional\Character\Dtos" />
+      <Folder Include="Transactional\Character\Requests" />
+      <Folder Include="Transactional\Character\Responses" />
+      <Folder Include="Transactional\QuizComment\Dtos" />
+      <Folder Include="Transactional\QuizComment\Requests" />
+      <Folder Include="Transactional\QuizComment\Responses" />
+      <Folder Include="Transactional\QuizResult\Dtos" />
+      <Folder Include="Transactional\QuizResult\Requests" />
+      <Folder Include="Transactional\QuizResult\Responses" />
+      <Folder Include="Transactional\Quiz\Dtos" />
+      <Folder Include="Transactional\Quiz\Requests" />
+      <Folder Include="Transactional\Quiz\Responses" />
+      <Folder Include="Transactional\Tag\Dtos" />
+      <Folder Include="Transactional\Tag\Requests" />
+      <Folder Include="Transactional\Tag\Responses" />
+      <Folder Include="Transactional\Title\Dtos" />
+      <Folder Include="Transactional\Title\Requests" />
+      <Folder Include="Transactional\Title\Responses" />
+      <Folder Include="Transactional\User\Responses" />
+    </ItemGroup>
+
+</Project>

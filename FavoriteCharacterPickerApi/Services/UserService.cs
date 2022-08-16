@@ -1,17 +1,22 @@
-﻿using FavoriteCharacterPickerApi.Data;
+﻿using AutoMapper;
+using FavoriteCharacterPickerApi.Core.Errors;
+using FavoriteCharacterPickerApi.Data;
 using FavoriteCharacterPickerApi.Data.Entities;
 using FavoriteCharacterPickerApi.Transactional.User.Dtos;
 using FavoriteCharacterPickerApi.Transactional.User.Requests;
+using Microsoft.EntityFrameworkCore;
 
 namespace FavoriteCharacterPickerApi.Services;
 
 public class UserService : IUserService
 {
     private readonly DataContext _dataContext;
-    
-    public UserService(DataContext dataContext)
+    private readonly IMapper _mapper;
+
+    public UserService(DataContext dataContext, IMapper mapper)
     {
         _dataContext = dataContext;
+        _mapper = mapper;
     }
 
     public async Task<UserDto> CreateUser(CreateUserRequest request)
@@ -20,29 +25,71 @@ public class UserService : IUserService
         {
             Username = request.Username,
             Email = request.Email,
-            PasswordHash =request.Password
+            PasswordHash = request.PasswordHash,
+            PasswordSalt = request.PasswordSalt
         });
         await _dataContext.SaveChangesAsync();
 
-        return new UserDto()
+        var mapperUser = _mapper.Map<UserDto>(user.Entity);
+        return mapperUser;
+    }
+
+    public async Task<UserDto> GetUserById(int id)
+    {
+        var foundUser = await _dataContext.Users.SingleOrDefaultAsync(user => user.Id == id);
+        if (foundUser != null)
         {
-            Id = user.Entity.Id,
-            Username = user.Entity.Username
-        };
+            return _mapper.Map<UserDto>(foundUser);
+        }
+        else
+        {
+            throw new FcpError(FcpErrorType.UserNotFound);
+        }
     }
 
-    public async Task GetUserById()
+    public async Task<UserDto> GetUserByName(string name)
     {
-        throw new NotImplementedException();
+        var foundUser = await _dataContext.Users.SingleOrDefaultAsync(user => user.Username == name);
+        if (foundUser != null)
+        {
+            return _mapper.Map<UserDto>(foundUser);
+        }
+        else
+        {
+            throw new FcpError(FcpErrorType.UserNotFound);
+        }
     }
 
-    public async Task GetUserByName()
+    public async Task<UserDto> EditUser(int id, EditUserRequest request)
     {
-        throw new NotImplementedException();
+        var user = await _dataContext.Users.SingleOrDefaultAsync(user => user.Id == id);
+        if (user == null)
+        {
+            throw new FcpError(FcpErrorType.UserNotFound);
+        }
+
+        if (request.Username != null)
+        {
+            user.Username = request.Username;
+        }
+
+        await _dataContext.SaveChangesAsync();
+        return _mapper.Map<UserDto>(user);
     }
 
-    public async Task DeleteUser()
+    public async Task DeleteUser(int id)
     {
-        throw new NotImplementedException();
+        var userToRemove = await _dataContext.Users.FirstOrDefaultAsync(user => user.Id == id);
+        if (userToRemove != null)
+        {
+            _dataContext.Users.Remove(userToRemove);
+            await _dataContext.SaveChangesAsync();
+        }
+        else
+        {
+            //User not found error
+            throw new FcpError(FcpErrorType.UserNotFound);
+        }
+
     }
 }

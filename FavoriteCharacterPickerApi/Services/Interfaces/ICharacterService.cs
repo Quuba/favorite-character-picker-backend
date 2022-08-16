@@ -2,5 +2,5 @@
 
 public interface ICharacterService
 {
-    
+    //TODO: implement
 }
