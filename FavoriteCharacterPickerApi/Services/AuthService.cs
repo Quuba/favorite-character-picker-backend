@@ -1,12 +1,17 @@
-﻿using System.Security.Cryptography;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using FavoriteCharacterPickerApi.Core.Errors;
 using FavoriteCharacterPickerApi.Data;
+using FavoriteCharacterPickerApi.Data.Entities;
 using FavoriteCharacterPickerApi.Services.Interfaces;
 using FavoriteCharacterPickerApi.Transactional.Auth.Responses;
 using FavoriteCharacterPickerApi.Transactional.User.Dtos;
 using FavoriteCharacterPickerApi.Transactional.User.Requests;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+
 
 namespace FavoriteCharacterPickerApi.Services;
 
@@ -14,11 +19,13 @@ public class AuthService : IAuthService
 {
     private readonly DataContext _dataContext;
     private readonly IUserService _userService;
+    private readonly IConfiguration _configuration;
 
-    public AuthService(DataContext dataContext, IUserService userService)
+    public AuthService(DataContext dataContext, IUserService userService, IConfiguration configuration)
     {
         _dataContext = dataContext;
         _userService = userService;
+        _configuration = configuration;
     }
 
     public async Task<UserDto> Register(RegisterRequest request)
@@ -55,9 +62,10 @@ public class AuthService : IAuthService
         if (!VerifyPasswordHash(request.Password, foundUser.PasswordHash, foundUser.PasswordSalt))
             throw new FcpError(FcpErrorType.BadCredentials);
 
+        
         LoginResponse response = new LoginResponse()
         {
-            Token = "dupa",
+            Token = CreateToken(foundUser),
             UserData = await _userService.GetUserById(foundUser.Id)
         };
         
@@ -82,8 +90,20 @@ public class AuthService : IAuthService
         }
     }
 
-    private string CreateToken()
+    private string CreateToken(User user)
     {
-        return "a";
+        List<Claim> claims = new List<Claim>()
+        {
+            new Claim(ClaimTypes.Name, user.Username)
+        };
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+        var token = new JwtSecurityToken(
+            claims: claims,
+            expires: DateTime.Now.AddDays(1),
+            signingCredentials: credentials
+        );
+        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+        return jwt;
     }
 }

@@ -38,7 +38,7 @@ namespace FavoriteCharacterPickerApi.Controllers
                     case FcpErrorType.UsernameIsTaken:
                         return Conflict();
                     case FcpErrorType.UserAlreadyExists:
-                        return StatusCode(69);
+                        return Conflict();
                     default:
                         Console.WriteLine($"ERROR: {e.Message}");
                         return Problem();
@@ -52,8 +52,8 @@ namespace FavoriteCharacterPickerApi.Controllers
         {
             try
             {
-                UserDto user = await _userService.GetUserByName(request.Username);
-                return Ok(user);
+                var response = await _authService.Login(request);
+                return Ok(response);
             }
             catch (FcpError e)
             {
