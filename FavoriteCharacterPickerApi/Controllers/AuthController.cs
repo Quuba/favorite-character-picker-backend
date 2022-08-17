@@ -16,9 +16,10 @@ namespace FavoriteCharacterPickerApi.Controllers
         private readonly IUserService _userService;
         private readonly IAuthService _authService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IUserService userService)
         {
             _authService = authService;
+            _userService = userService;
         }
 
 
@@ -52,8 +53,9 @@ namespace FavoriteCharacterPickerApi.Controllers
         {
             try
             {
-                UserDto user = await _userService.GetUserByName(request.Username);
-                return Ok(user);
+                var response = await  _authService.Login(request);
+                
+                return Ok(response);
             }
             catch (FcpError e)
             {

@@ -23,7 +23,7 @@ public class AuthService : IAuthService
 
     public async Task<UserDto> Register(RegisterRequest request)
     {
-        CreatePasswordHash(request.Password, out string passwordHash, out string passwordSalt);
+        CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
         if (await _dataContext.Users.AnyAsync(u => u.Username == request.Username))
         {
@@ -64,21 +64,21 @@ public class AuthService : IAuthService
         return response;
     }
 
-    private void CreatePasswordHash(string password, out string passwordHash, out string passwordSalt)
+    private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
         using (var hmac = new HMACSHA512())
         {
-            passwordSalt = Encoding.UTF8.GetString(hmac.Key);
-            passwordHash = Encoding.UTF8.GetString(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
+            passwordSalt = hmac.Key;
+            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
     }
 
-    private bool VerifyPasswordHash(string password, string passwordHash, string passwordSalt)
+    private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
     {
-        using (var hmac = new HMACSHA512(Encoding.UTF8.GetBytes(passwordSalt)))
+        using (var hmac = new HMACSHA512(passwordSalt))
         {
             var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return computedHash.SequenceEqual(Encoding.UTF8.GetBytes(passwordHash));
+            return computedHash.SequenceEqual(passwordHash);
         }
     }
 

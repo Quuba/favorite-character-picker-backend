@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FavoriteCharacterPickerApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220816235523_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220817113203_InitialCreate3")]
+    partial class InitialCreate3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -207,13 +207,13 @@ namespace FavoriteCharacterPickerApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<byte[]>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("bytea");
 
-                    b.Property<string>("PasswordSalt")
+                    b.Property<byte[]>("PasswordSalt")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("bytea");
 
                     b.Property<string>("Username")
                         .IsRequired()

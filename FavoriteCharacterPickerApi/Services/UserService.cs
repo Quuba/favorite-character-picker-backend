@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text;
+using AutoMapper;
 using FavoriteCharacterPickerApi.Core.Errors;
 using FavoriteCharacterPickerApi.Data;
 using FavoriteCharacterPickerApi.Data.Entities;
