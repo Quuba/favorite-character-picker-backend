@@ -16,9 +16,10 @@ namespace FavoriteCharacterPickerApi.Controllers
         private readonly IUserService _userService;
         private readonly IAuthService _authService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IUserService userService)
         {
             _authService = authService;
+            _userService = userService;
         }
 
 
