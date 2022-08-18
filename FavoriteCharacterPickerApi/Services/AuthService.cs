@@ -5,6 +5,7 @@ using System.Text;
 using FavoriteCharacterPickerApi.Core.Errors;
 using FavoriteCharacterPickerApi.Data;
 using FavoriteCharacterPickerApi.Data.Entities;
+using FavoriteCharacterPickerApi.Data.Enums;
 using FavoriteCharacterPickerApi.Services.Interfaces;
 using FavoriteCharacterPickerApi.Transactional.Auth.Responses;
 using FavoriteCharacterPickerApi.Transactional.User.Dtos;
@@ -94,7 +95,8 @@ public class AuthService : IAuthService
     {
         List<Claim> claims = new List<Claim>()
         {
-            new Claim(ClaimTypes.Name, user.Username)
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, UserRoles.Admin)
         };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);

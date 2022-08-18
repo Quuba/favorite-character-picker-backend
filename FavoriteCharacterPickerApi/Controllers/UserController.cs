@@ -1,7 +1,9 @@
 ﻿using FavoriteCharacterPickerApi.Core.Errors;
+using FavoriteCharacterPickerApi.Data.Enums;
 using FavoriteCharacterPickerApi.Services;
 using FavoriteCharacterPickerApi.Transactional.User.Dtos;
 using FavoriteCharacterPickerApi.Transactional.User.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FavoriteCharacterPickerApi.Controllers;
@@ -16,20 +18,21 @@ public class UserController : ControllerBase
         _userService = userService;
     }
     
-    [HttpPost]
-    public async Task<IActionResult> PostUserAsync(CreateUserRequest request)
-    {
-        var baseUrl = ($"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/api");
-
-        var createdUser = await _userService.CreateUser(request);
-        
-        var url = baseUrl + $"/{createdUser.Id}";
-
-        return CreatedAtRoute(url, createdUser);
-    }
+    // [HttpPost]
+    // public async Task<IActionResult> PostUserAsync(CreateUserRequest request)
+    // {
+    //     var baseUrl = ($"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/api");
+    //
+    //     var createdUser = await _userService.CreateUser(request);
+    //     
+    //     var url = baseUrl + $"/{createdUser.Id}";
+    //
+    //     return CreatedAtRoute(url, createdUser);
+    // }
     
     [HttpGet]
     [Route("{id:int}")]
+    [Authorize (Roles = "role_admin")]
     public async Task<ActionResult<UserDto>> GetUserById(int id)
     {
         try
@@ -52,6 +55,7 @@ public class UserController : ControllerBase
     
     [HttpGet]
     [Route("{name}")]
+    [Authorize]
     public async Task<ActionResult<UserDto>> GetUserByName(string name)
     {
         try
@@ -71,31 +75,33 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpPatch]
-    [Route("{id:int}")]
-    public async Task<ActionResult<UserDto>> EditUser(int id, [FromBody] EditUserRequest request)
-    {
-        try
-        {
-            var editedUser = await _userService.EditUser(id, request);
-            return Ok(editedUser);
-        }
-        catch (FcpError e)
-        {
-            if (e.ErrorType == FcpErrorType.UserNotFound)
-            {
-                return NotFound();
-            }
-            Console.WriteLine(e);
-            throw;
-        }
-    }
+    // [HttpPatch]
+    // [Route("{id:int}")]
+    // [Authorize]
+    // public async Task<ActionResult<UserDto>> EditUser(int id, [FromBody] EditUserRequest request)
+    // {
+    //     try
+    //     {
+    //         var editedUser = await _userService.EditUser(id, request);
+    //         return Ok(editedUser);
+    //     }
+    //     catch (FcpError e)
+    //     {
+    //         if (e.ErrorType == FcpErrorType.UserNotFound)
+    //         {
+    //             return NotFound();
+    //         }
+    //         Console.WriteLine(e);
+    //         throw;
+    //     }
+    // }
 
-    [HttpDelete]
-    [Route("{id:int}")]
-    public async Task<IActionResult> DeleteUser(int id)
-    {
-        await _userService.DeleteUser(id);
-        return Ok();
-    }
+    // [HttpDelete]
+    // [Route("{id:int}")]
+    // [Authorize]
+    // public async Task<IActionResult> DeleteUser(int id)
+    // {
+    //     await _userService.DeleteUser(id);
+    //     return Ok();
+    // }
 }
