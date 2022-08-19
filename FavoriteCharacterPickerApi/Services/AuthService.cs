@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using AutoMapper;
 using FavoriteCharacterPickerApi.Core.Errors;
 using FavoriteCharacterPickerApi.Data;
 using FavoriteCharacterPickerApi.Data.Entities;
@@ -21,12 +22,14 @@ public class AuthService : IAuthService
     private readonly DataContext _dataContext;
     private readonly IUserService _userService;
     private readonly IConfiguration _configuration;
+    private readonly IMapper _mapper;
 
-    public AuthService(DataContext dataContext, IUserService userService, IConfiguration configuration)
+    public AuthService(DataContext dataContext, IUserService userService, IConfiguration configuration, IMapper mapper)
     {
         _dataContext = dataContext;
         _userService = userService;
         _configuration = configuration;
+        _mapper = mapper;
     }
 
     public async Task<UserDto> Register(RegisterRequest request)
@@ -55,7 +58,7 @@ public class AuthService : IAuthService
 
     public async Task<LoginResponse> Login(LoginRequest request)
     {
-        var foundUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+        var foundUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
         if (foundUser == null)
             throw new FcpError(FcpErrorType.UserNotFound);
@@ -67,7 +70,7 @@ public class AuthService : IAuthService
         LoginResponse response = new LoginResponse()
         {
             Token = CreateToken(foundUser),
-            UserData = await _userService.GetUserById(foundUser.Id)
+            UserData = _mapper.Map<UserDto>(foundUser)
         };
         
         return response;
